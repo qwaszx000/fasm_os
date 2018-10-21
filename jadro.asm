@@ -97,7 +97,7 @@ protected:
 	;mov [0xb8000],dword 0x07690748; Protected mode test
 Cicle:
 	hlt;- после приёма символа печатает и падает.
-	jmp Cicle
+	jmp Cicle;Error: uncontrolable cicle. Simbol writes and gets error. i ret return to int_eoi
 
 ;Add error handlers - TODO
 ;========================IDTR==============================
@@ -118,12 +118,24 @@ IDT:
 
 	dd 0,0;6
 	dd 0,0;7
-	dd 0,0;8
+
+	dw ((double_fault_handler shl 0x30) shr 0x30);8 - double fault
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (double_fault_handler shr 0x10)
+
 	dd 0,0;9
 	dd 0,0;10
 	dd 0,0;11
 	dd 0,0;12
-	dd 0,0;13
+
+	dw ((general_fault_handler shl 0x30) shr 0x30);13 - general protection fault
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (general_fault_handler shr 0x10)
+
 	dd 0,0;14
 	dd 0,0;15
 	dd 0,0;16
@@ -154,32 +166,51 @@ IDTR:
 	dd IDT
 ;use32
 ;=========================================================
-int_EOI:
+int_EOI_pic1:
 	push ax
+	;==================
 	mov al, 20h
-	out 020h, al
-	out 0a0h, al
+	out 020h, al;EOI в PIC
+	;==================
+	pop ax
+	iretd
+
+int_EOI_pic2:
+	push ax
+	;==================
+	mov al, 20h
+	out 0xA0, al
+	out 020h, al;EOI в PIC
+	;==================
 	pop ax
 	iretd
 
 irq0_h:
 	inc byte [0xB8000]
-	;jmp int_EOI
+	jmp int_EOI_pic2
 
 irq1_h:
+	push eax
 	in eax, 60h;eax = scan code
 	push eax
 	in eax, 61h
 	xor eax, 1
 	out 61h, eax
 	pop eax;eax = scan code
+	;TODO - transform scan code to ascii
 	mov [0xB8000],dword eax
-	iret
-	;jmp int_EOI
+	pop eax
+	jmp int_EOI_pic2
 
-int_test:
-	 mov [0xb8000],dword 0x07690748
-	 iret
+int_test:;int 5
+	mov [0xb8000],dword 0x07690748
+	jmp int_EOI_pic1;iret
+
+double_fault_handler:;int 0x8
+	jmp int_EOI_pic2
+
+general_fault_handler:;int 0xd
+	jmp int_EOI_pic2
 ;=========================================================
 
 use16
@@ -232,4 +263,4 @@ gdt_a:
 ;=============================================================
 on_ld db 'Jadro!!!',0h
 ;tst_s db 'H',0h
-times (512-($-$$)) db 0
+;times (512-($-$$)) db 0
