@@ -95,9 +95,11 @@ protected:
 	int 05h;Test   Work!!!
 
 	;mov [0xb8000],dword 0x07690748; Protected mode test
-	;hlt
-	jmp $
+Cicle:
+	hlt;- после приёма символа печатает и падает.
+	jmp Cicle
 
+;Add error handlers - TODO
 ;========================IDTR==============================
 ;use16
 IDT:
@@ -141,7 +143,12 @@ IDT:
 	dd 0,0;30
 	dd 0,0;31
 	dd 0,0;dw irq0_h, 08h, 1000111000000000b;irq0 - таймер
-	dd 0,0;dw irq1_h, 08h, 1000111000000000b;irq1 - клавиатура
+
+	dw ((irq1_h shl 0x30) shr 0x30)
+	dw 08h
+	db 0
+	db 010001110b
+	dw (irq1_h shr 0x10);irq1 - клавиатура
 IDTR:
 	dw IDTR-IDT-1
 	dd IDT
@@ -157,7 +164,7 @@ int_EOI:
 
 irq0_h:
 	inc byte [0xB8000]
-	jmp int_EOI
+	;jmp int_EOI
 
 irq1_h:
 	in eax, 60h;eax = scan code
@@ -167,7 +174,8 @@ irq1_h:
 	out 61h, eax
 	pop eax;eax = scan code
 	mov [0xB8000],dword eax
-	jmp int_EOI
+	iret
+	;jmp int_EOI
 
 int_test:
 	 mov [0xb8000],dword 0x07690748
