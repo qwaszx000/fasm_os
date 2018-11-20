@@ -66,10 +66,14 @@ protected:
         ;=============================
         sti
 
-        ;mov [0xB8000], dword 0x7690748
+        ;=================TEST=============
         int 0Fh;15
-        ;hlt
-        jmp $
+        mov [0xB8000], dword 0x7600740;Works good!
+        int 0fh
+        ;===================================
+main_cicle:
+        hlt
+        jmp main_cicle
 ;=========TABLES===============
 use16
 align 16
@@ -166,25 +170,51 @@ idt:;interrupts description table
         dd 0,0;30
         dd 0,0;31
 
-        dd 0,0;32
+        dw ((empty_exception_handler shl 0x30) shr 0x30);32
+        dw 0x8
+        db 0
+        db 010001110b
+        dw (empty_exception_handler shr 0x10)
 
-        dd 0,0;irq 0 - timer
-        dd 0,0;irq 1 - keyboard
+        dw ((timer_handler shl 0x30) shr 0x30);irq0 - timer
+        dw 0x8
+        db 0
+        db 010001110b
+        dw (timer_handler shr 0x10);jumps to pop ax iretd
+
+        dd 0,0
+        ;dw ((timer_handler shl 0x30) shr 0x30);irq1 - keyboard
+        ;dw 0x8
+        ;db 0
+        ;db 010001110b
+        ;dw (timer_handler shr 0x10)
 IDTR:
         dw IDTR-idt-1;size
         dd idt;address
 
 ;================INT HANDLERS================
 int_test:
+        push ax
         mov [0xb8000], dword 0x07690748
-        mov al, 20h
-        out 20h, al
-        iret
+        ;mov al, 20h
+        ;out 20h, al
+        pop ax
+        iretd
 
 empty_exception_handler:
-        mov al, 20h
-        out 0x20, al
+        push ax
+        ;mov al, 20h
+        ;out 0x20, al
         ;out 0xA0, al
-        iret
+        pop ax
+        iretd
+
+timer_handler:
+        push ax
+        mov al,20h
+        out 0x20, al
+        add [0xb8000], dword 1
+        pop ax
+        iretd
 
 times 512-($-$$) db 0
