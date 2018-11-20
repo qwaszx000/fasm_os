@@ -68,11 +68,11 @@ protected:
 
         ;=================TEST=============
         int 0Fh;15
-        mov [0xB8000], dword 0x7600740;Works good!
+        mov [0xB8000], dword 0x7610741;Works good!
         int 0fh
         ;===================================
 main_cicle:
-        hlt
+        hlt          ;there calls error. see empty_exception_handler code
         jmp main_cicle
 ;=========TABLES===============
 use16
@@ -182,12 +182,11 @@ idt:;interrupts description table
         db 010001110b
         dw (timer_handler shr 0x10);jumps to pop ax iretd
 
-        dd 0,0
-        ;dw ((timer_handler shl 0x30) shr 0x30);irq1 - keyboard
-        ;dw 0x8
-        ;db 0
-        ;db 010001110b
-        ;dw (timer_handler shr 0x10)
+        dw ((timer_handler shl 0x30) shr 0x30);irq1 - keyboard
+        dw 0x8
+        db 0
+        db 010001110b
+        dw (timer_handler shr 0x10)
 IDTR:
         dw IDTR-idt-1;size
         dd idt;address
@@ -206,14 +205,15 @@ empty_exception_handler:
         ;mov al, 20h
         ;out 0x20, al
         ;out 0xA0, al
+        mov [0xB8000], dword 0x7600740
         pop ax
         iretd
 
 timer_handler:
         push ax
+        add [0xb8000], dword 1
         mov al,20h
         out 0x20, al
-        add [0xb8000], dword 1
         pop ax
         iretd
 
