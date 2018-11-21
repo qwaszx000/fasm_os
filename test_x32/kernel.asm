@@ -68,7 +68,7 @@ protected:
 
         ;=================TEST=============
         int 0Fh;15
-        mov [0xB8000], dword 0x7610741;Works good!
+        mov [0xB8000], dword 0x7600740;Works good!
         int 0fh
         ;===================================
 main_cicle:
@@ -170,29 +170,30 @@ idt:;interrupts description table
         dd 0,0;30
         dd 0,0;31
 
-        dw ((empty_exception_handler shl 0x30) shr 0x30);32
-        dw 0x8
-        db 0
-        db 010001110b
-        dw (empty_exception_handler shr 0x10)
-
-        dw ((timer_handler shl 0x30) shr 0x30);irq0 - timer
-        dw 0x8
-        db 0
-        db 010001110b
-        dw (timer_handler shr 0x10);jumps to pop ax iretd
-
-        dw ((timer_handler shl 0x30) shr 0x30);irq1 - keyboard
+        dw ((timer_handler shl 0x30) shr 0x30);32 - 0x20 - irq0 timer  -  calls correct
         dw 0x8
         db 0
         db 010001110b
         dw (timer_handler shr 0x10)
+
+        dw ((keyboard_handler shl 0x30) shr 0x30); irq1 - keyboard  - calls correct
+        dw 0x8
+        db 0
+        db 010001110b
+        dw (keyboard_handler shr 0x10);jumps to pop ax iretd
+
+        ;dw ((timer_handler shl 0x30) shr 0x30);irq2
+        ;dw 0x8
+        ;db 0
+        ;db 010001110b
+        ;dw (timer_handler shr 0x10)
 IDTR:
         dw IDTR-idt-1;size
         dd idt;address
 
 ;================INT HANDLERS================
 int_test:
+        nop;skips 1 command
         push ax
         mov [0xb8000], dword 0x07690748
         ;mov al, 20h
@@ -201,6 +202,7 @@ int_test:
         iretd
 
 empty_exception_handler:
+        nop;skips 1 command
         push ax
         ;mov al, 20h
         ;out 0x20, al
@@ -209,12 +211,23 @@ empty_exception_handler:
         pop ax
         iretd
 
-timer_handler:
+keyboard_handler:
+        nop;skips 1 command
         push ax
-        add [0xb8000], dword 1
+        mov al, 20h
+        out 0x20, al
+        ;out 0xA0, al
+        mov [0xB8000], dword 0x7610741
+        pop ax
+        iretd
+
+timer_handler:
+        nop;skips 1 command
+        push ax
+        inc dword [0xb8000]
         mov al,20h
         out 0x20, al
         pop ax
         iretd
 
-times 512-($-$$) db 0
+;times 512-($-$$) db 0
