@@ -214,13 +214,15 @@ empty_exception_handler:
 
 keyboard_handler:
         nop;skips 1 command
-        push ax
+        push eax
+        push ebx
 .read_buffer:
         in al, 61h
         xor al, 1h ;Set readed status bit
         out 61h, al
 
         in al, 60h;read data
+.convertToAscii:
 .write:
         mov ebx, 0xB8001
         add ebx, dword [i];Style
@@ -234,7 +236,8 @@ keyboard_handler:
 .end:
         mov al, 20h
         out 0x20, al
-        pop ax
+        pop ebx
+        pop eax
         iretd
 
 timer_handler:
@@ -246,5 +249,5 @@ timer_handler:
         pop ax
         iretd
 
-;times 512-($-$$) db 0
 i dw 0
+times 1024-($-$$) db 0;2 sectors
