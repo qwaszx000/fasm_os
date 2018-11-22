@@ -72,7 +72,8 @@ protected:
         int 0fh
         ;===================================
 main_cicle:
-        hlt          ;there calls error. see empty_exception_handler code
+        sti
+        hlt
         jmp main_cicle
 ;=========TABLES===============
 use16
@@ -214,10 +215,25 @@ empty_exception_handler:
 keyboard_handler:
         nop;skips 1 command
         push ax
+.read_buffer:
+        in al, 61h
+        xor al, 1h ;Set readed status bit
+        out 61h, al
+
+        in al, 60h;read data
+.write:
+        mov ebx, 0xB8001
+        add ebx, dword [i];Style
+        mov [ebx], byte 0x07
+
+        mov ebx, 0xB8000
+        add ebx, dword [i];symbol
+        mov [ebx], al
+        ;there goes something wrong
+        add [i], 2
+.end:
         mov al, 20h
         out 0x20, al
-        ;out 0xA0, al
-        mov [0xB8000], dword 0x7610741
         pop ax
         iretd
 
@@ -231,3 +247,4 @@ timer_handler:
         iretd
 
 ;times 512-($-$$) db 0
+i dw 0
