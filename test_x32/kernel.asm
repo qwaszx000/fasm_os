@@ -81,7 +81,11 @@ protected:
         ;pop eax
         ;=================TEST=============
         int 0Fh;15
-        mov [0xB8000], dword 0x7600740;Works good!
+        ;mov [0xB8000], dword 0x7600740;Works good!
+        ;push 5
+        ;push test_string
+        ;call print_text
+
         int 0fh
         ;===================================
 main_cicle:
@@ -260,7 +264,12 @@ keyboard_handler:
         mov ebx, 0xB8000
         add bx, word [i];symbol pos
         mov [ebx], al
+        cmp [i], 2000
+        jz .zero_counter
         add [i], 2
+        jmp .end
+.zero_counter:
+        mov [i], 0x00
 .end:
         mov al, 20h
         out 0x20, al
@@ -278,6 +287,24 @@ timer_handler:
         pop ax
         iretd
 
+;push size
+;push text_pointer
+;TODO
+print_text:
+.get_ready:
+        pop ax;ax - address where we returns
+        mov ebx, 0x0
+        pop bx;bx - pointer
+        mov ecx, 0x0
+        pop cx;cx - size - loop command uses it
+        push ax;address to return in stack
+.write:
+        mov byte [ecx*2 + 0xb8001], 0x07
+        mov al, [ebx + ecx - 1]
+        mov byte [ecx*2 + 0xb8000], al
+        loop .write
+        ret;ret gets address to return from stack and jumps there
+
 i dw 0
 chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8, \;backspace
                0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', \
@@ -286,4 +313,5 @@ chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8,
                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1', \
                '2', '3', '0', '.', 0, 0, 0, 0, 0
 
+test_string db 'hello', 0
 times 1024-($-$$) db 0;2 sectors
