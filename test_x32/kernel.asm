@@ -65,7 +65,20 @@ protected:
         pop ax
         ;=============================
         sti
+        ;============Keyboard controller setup============
+        ;push eax
+        ;mov al, 0x20
+        ;out 0x64, al;Read configuration command
+        ;in al, 0x60
+        ;btr ax, 6;Set translation bit to 0
+        ;push ax;Configuration in stack
 
+        ;mov al, 0x60;Send configuration byte command
+        ;out 0x64, al
+
+        ;pop ax;Configuration in ax(al)
+        ;out 0x60, al;Send configuration
+        ;pop eax
         ;=================TEST=============
         int 0Fh;15
         mov [0xB8000], dword 0x7600740;Works good!
@@ -216,26 +229,42 @@ keyboard_handler:
         nop;skips 1 command
         push eax
         push ebx
+        push ecx
 .read_buffer:
         in al, 61h
         xor al, 1h ;Set readed status bit
         out 61h, al
 
         in al, 60h;read data
-.convertToAscii:
+.convertToAscii:;Al always 0
+        mov ebx, chars_codes
+
+        dec al;AL - 1 because array elem count starts from 0
+        mov cl, al
+        sub cl, 0x80;if char code ! in chars_codes - it released
+        jns .release_char_convert
+        mov ah, 0x0;need to add ax to bx
+        add bx, ax
+        jmp .write
+
+.release_char_convert:
+        mov ch, 0x0
+        add bx, cx
+        jmp .end;Dont need to write key 2 times(when pressed and when released)
 .write:
+        mov al, [ebx]
         mov ebx, 0xB8001
-        add ebx, dword [i];Style
+        add bx, word [i];Style pos
         mov [ebx], byte 0x07
 
         mov ebx, 0xB8000
-        add ebx, dword [i];symbol
+        add bx, word [i];symbol pos
         mov [ebx], al
-        ;there goes something wrong
         add [i], 2
 .end:
         mov al, 20h
         out 0x20, al
+        pop ecx
         pop ebx
         pop eax
         iretd
@@ -243,11 +272,18 @@ keyboard_handler:
 timer_handler:
         nop;skips 1 command
         push ax
-        inc dword [0xb8000]
+        ;inc dword [0xb8000]
         mov al,20h
         out 0x20, al
         pop ax
         iretd
 
 i dw 0
+chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8, \;backspace
+               0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', \
+               0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '`', 0, '\', \
+               'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ', 0, 0, \
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1', \
+               '2', '3', '0', '.', 0, 0, 0, 0, 0
+
 times 1024-($-$$) db 0;2 sectors
