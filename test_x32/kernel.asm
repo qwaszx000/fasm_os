@@ -82,10 +82,13 @@ protected:
         ;=================TEST=============
         int 0Fh;15
         ;mov [0xB8000], dword 0x7600740;Works good!
-        ;push 5
-        ;push test_string
-        ;call print_text
 
+        push 5
+        push test_string
+        call print
+
+        ;push 'h'
+        ;call putc
         int 0fh
         ;===================================
 main_cicle:
@@ -289,21 +292,53 @@ timer_handler:
 
 ;push size
 ;push text_pointer
-;TODO
-print_text:
-.get_ready:
-        pop ax;ax - address where we returns
-        mov ebx, 0x0
-        pop bx;bx - pointer
-        mov ecx, 0x0
-        pop cx;cx - size - loop command uses it
-        push ax;address to return in stack
+print:
+        pop eax;addr to ret
+        pop ebx;text_pointer
+        pop ecx;size
+        push eax
+
+        mov eax, 0x0
+        mov edx, ecx
+        dec edx;size - 1 = iterator
 .write:
-        mov byte [ecx*2 + 0xb8001], 0x07
-        mov al, [ebx + ecx - 1]
-        mov byte [ecx*2 + 0xb8000], al
-        loop .write
+        mov al, [ebx]
+        push ax
+        call putc
+        inc ebx
+
+        dec edx;iterator
+        cmp edx, 0xFFFFFFFF;if edx == -1
+        jnz .write
         ret;ret gets address to return from stack and jumps there
+
+;push 'char'
+putc:
+        pop ecx;ret addr
+        pop ax
+        push ecx;ret addr
+
+        push ecx
+        push ebx
+        push eax
+
+
+        mov ecx, 0xb8000
+        add cx, [i]
+        mov byte [ecx], al
+        inc ecx
+        mov byte [ecx], 0x07
+        cmp [i], 2000
+        jz .clear_counter
+        add [i], 2
+        jmp .end
+.clear_counter:
+        mov [i], 0x0
+.end:
+        pop eax
+        pop ebx
+        pop ecx
+        ret
 
 i dw 0
 chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8, \;backspace
