@@ -1,1 +1,0 @@
-K:\programs\fasmw17139\FASM.EXE K:\my_os\all_os.asm K:\my_os\os.img
