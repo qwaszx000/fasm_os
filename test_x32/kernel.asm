@@ -1,37 +1,39 @@
 format binary
-org 500h
+org 0x500
 use16
 
+;Prepare to jmp to protected mode
 cli
 lgdt [gdt]
 
-in al, 70h;;
-or al, 80h;; A20
-out 70h, al;
+in al, 0x70	;
+or al, 0x80	; A20
+out 0x70, al	;
 
 mov eax, cr0
 or al, 1
 mov cr0, eax
 
-jmp 08h:protected
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;							  ;
-;							  ;
+jmp 0x08:protected_start
+
+;;;;;;;;;;;;;;;;;;;PROTECTED MODE;;;;;;;;;;;;;;;;;;;;;;;;;;
 use32
-protected:
-	mov ax,10h
-	mov ds,ax;Data segment = code segment. like com prog
-	mov es,ax;Second data secgment
+protected_start:
+	mov ax,0x10
+	mov ds,ax;Data segment = code segment
+
+	mov es,ax;Second data segment
 	mov fs,ax;Third data segment
 	mov gs,ax;4 data segment
 
-	;mov ax,12h
 	mov ss,ax;Stack segment
+
+	;mov ax,0x12
 
 	;mov edi,0xB8000
 
-	mov esp,90000h;Stack end pointer
-	mov ebp,50000h;Stack base pointer
+	mov esp,0x90000;Stack end pointer
+	mov ebp,0x50000;Stack base pointer
 
 	pusha
 	lidt [IDTR]
@@ -40,7 +42,7 @@ protected:
 	;============PIC==============
 	push ax
 
-	mov al, 11h
+	mov al, 0x11
 	out 0x20, al;Start setting pic
 	out 0xA0, al
 
@@ -58,7 +60,7 @@ protected:
 	out 0x21, al
 	out 0xA1, al
 
-	mov al, 00h
+	mov al, 0x00
 	out 0x21, al
 	out 0xA1, al
 
@@ -89,7 +91,7 @@ protected:
 	push 5
 	push test_string
 	call print
-
+	
 	;push 'h'
 	;call putc
 	;int 0fh
@@ -104,8 +106,8 @@ align 16
 
 gdt_a:;global description table
 	dq 0
-	dw 0FFFFh, 0, 9A00h, 0CFh;Code - 8
-	dw 0FFFFh, 0, 9200h, 08Fh;Data - 16
+	dw 0x0FFFF, 0, 0x9A00, 0x0CF;Code - 8
+	dw 0x0FFFF, 0, 0x9200, 0x08F;Data - 16
 gdt:
 	dw gdt-gdt_a
 	dq gdt_a
@@ -241,11 +243,11 @@ keyboard_handler:
 	push ebx
 	push ecx
 .read_buffer:
-	in al, 61h
-	xor al, 1h ;Set readed status bit
-	out 61h, al
+	in al, 0x61
+	xor al, 1 ;Set readed status bit
+	out 0x61, al
 
-	in al, 60h;read data
+	in al, 0x60;read data
 .convertToAscii:;Al always 0
 	mov ebx, chars_codes
 
@@ -277,7 +279,7 @@ keyboard_handler:
 .zero_counter:
 	mov [i], 0x00
 .end:
-	mov al, 20h
+	mov al, 0x20
 	out 0x20, al
 	pop ecx
 	pop ebx
@@ -288,7 +290,7 @@ timer_handler:
 	nop;skips 1 command
 	push ax
 	;inc dword [0xb8000]
-	mov al,20h
+	mov al, 0x20
 	out 0x20, al
 	pop ax
 	iretd

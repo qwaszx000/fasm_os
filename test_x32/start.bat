@@ -1,1 +1,0 @@
-qemu-system-i386 -s -S C:\progs\osdev\test_x32\os.img
