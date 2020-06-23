@@ -30,11 +30,10 @@ protected_start:
 	;============TEST=============
 	;int 0Fh;15
 
-	push 5
-	push test_string
+	mov eax, test_string
 	call print
 	
-	;push 'h'
+	;mov bx, 'h'
 	;call putc
 	;int 0fh
 	;===================================

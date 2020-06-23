@@ -1,49 +1,39 @@
-;push size
-;push text_pointer
+;eax = text_pointer
 print:
-	pop eax;addr to ret
-	pop ebx;text_pointer
-	pop ecx;size
-	push eax
-
-	mov eax, 0x0
-	mov edx, ecx
-	dec edx;size - 1 = iterator
-.write:
-	mov al, [ebx]
-	push ax
-	call putc
-	inc ebx
-
-	dec edx;iterator
-	cmp edx, 0xFFFFFFFF;if edx == -1
-	jnz .write
-	ret;ret gets address to return from stack and jumps there
-
-;push 'char'
-putc:
-	pop ecx;ret addr
-	pop ax
-	push ecx;ret addr
-
-	push ecx
+	;if zero char in end of line - stop
 	push ebx
-	push eax
 
+.cicle:
+	mov bl, byte [eax]
+	test bl, bl
+	jz .exit
+
+	call putc
+	inc eax ;next char
+	jmp .cicle
+
+.exit:
+	pop ebx
+	ret
+	
+
+;bl = char
+putc:
+	push ecx
 
 	mov ecx, 0xb8000
 	add cx, [console_pointer]
-	mov byte [ecx], al
+	mov byte [ecx], bl
 	inc ecx
 	mov byte [ecx], 0x07
 	cmp [console_pointer], 2000
 	jz .clear_counter
 	add [console_pointer], 2
 	jmp .end
+
 .clear_counter:
 	mov [console_pointer], 0x0
+
 .end:
-	pop eax
-	pop ebx
 	pop ecx
 	ret
