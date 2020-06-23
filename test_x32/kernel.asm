@@ -6,8 +6,8 @@ use16
 cli
 lgdt [gdt]
 
-in al, 0x70	;
-or al, 0x80	; A20
+in al, 0x70		;
+or al, 0x80		; A20
 out 0x70, al	;
 
 mov eax, cr0
