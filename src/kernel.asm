@@ -39,7 +39,6 @@ protected_start:
 	;int 0fh
 	;===================================
 main_cicle:
-	sti
 	hlt
 	jmp main_cicle
 
