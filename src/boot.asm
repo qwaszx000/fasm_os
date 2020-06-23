@@ -43,7 +43,22 @@ _start:
     ;mov bx, 0x700
     ;int 13h
 
-    jmp 0x0500
+    ;Prepare to jmp to protected mode
+    cli
+    lgdt [gdt] ;load gdt
+
+    in al, 0x70		;
+    or al, 0x80		; A20
+    out 0x70, al	;
+
+    mov eax, cr0
+    or al, 1
+    mov cr0, eax
+    
+    jmp 0x08:0x0500
+
+
+include "inc/kernel_setup/tables/gdt.asm"
 
 times 510-($-$$) db 0
 db 0x055,0x0aa;magic symbols to show, that it is a bootloader

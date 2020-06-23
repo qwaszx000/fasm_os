@@ -32,20 +32,18 @@ putc:
 
 
 	mov ecx, 0xb8000
-	add cx, [i]
+	add cx, [console_pointer]
 	mov byte [ecx], al
 	inc ecx
 	mov byte [ecx], 0x07
-	cmp [i], 2000
+	cmp [console_pointer], 2000
 	jz .clear_counter
-	add [i], 2
+	add [console_pointer], 2
 	jmp .end
 .clear_counter:
-	mov [i], 0x0
+	mov [console_pointer], 0x0
 .end:
 	pop eax
 	pop ebx
 	pop ecx
 	ret
-
-i dw 0

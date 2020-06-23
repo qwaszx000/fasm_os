@@ -46,18 +46,18 @@ keyboard_handler:
 .write:
 	mov al, [ebx]
 	mov ebx, 0xB8001
-	add bx, word [i];Style pos
+	add bx, word [console_pointer];Style pos
 	mov [ebx], byte 0x07
 
 	mov ebx, 0xB8000
-	add bx, word [i];symbol pos
+	add bx, word [console_pointer];symbol pos
 	mov [ebx], al
-	cmp [i], 2000
+	cmp [console_pointer], 2000
 	jz .zero_counter
-	add [i], 2
+	add [console_pointer], 2
 	jmp .end
 .zero_counter:
-	mov [i], 0x00
+	mov [console_pointer], 0x00
 .end:
 	mov al, 0x20
 	out 0x20, al
