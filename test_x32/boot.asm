@@ -7,15 +7,17 @@ _start:
     push dx
     cli
     xor ax, ax
-    mov ds,ax
-    mov es,ax
-    mov ss,ax
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov fs, ax
+    mov gs, ax
     sti
 
     ;Reset disk driver
     pop dx
     push dx;DL - disk drive
-    mov ah,0x00;command
+    xor ah, ah; 0 - command
     int 0x13
 
     ;clear video memory
@@ -25,10 +27,10 @@ _start:
     ;Read kernel.asm sectors(2 sectors)
     mov ah, 0x02;Read sector from drive
     pop dx;DH - head, DL - drive
-    mov ch, 0x00;Cylinder
+    xor ch, ch;0 Cylinder
     mov cl, 0x02;Sector(count from 1)
     mov al, 0x02;Sectors to read we read 2 sectors because our kernel has size = 2 sectors
-    mov bx, 0x0000
+    xor bx, bx
     mov es,bx    ;ES:BX memory address
     mov bx, 0x0500
     int 0x13;Read sector from drive

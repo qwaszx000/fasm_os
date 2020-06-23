@@ -60,7 +60,8 @@ protected_start:
 	out 0x21, al
 	out 0xA1, al
 
-	mov al, 0x00
+	;mov al, 0x00
+	xor al, al ;0x00
 	out 0x21, al
 	out 0xA1, al
 
