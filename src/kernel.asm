@@ -27,21 +27,25 @@ protected_start:
 	;int 0Fh;15
 	call setup_pic
 
-	push ebx
-	push ecx
-	push edx
+	;push ebx
+	;push ecx
+	;push edx
 
-	xor eax, eax
-	xor ebx, ebx
-	xor ecx, ecx
-	xor edx, edx
-	call pciReadConfigDWord
+	;xor eax, eax
+	;xor ebx, ebx
+	;xor ecx, ecx
+	;xor edx, edx
+	;call pciReadConfigDWord
 
-	pop edx
-	pop ecx
-	pop ebx
+	;pop edx
+	;pop ecx
+	;pop ebx
+	mov eax, 23
+	mov ebx, test_num_buf
+	mov ecx, 2
+	call dec_to_str
 
-	mov eax, test_string
+	mov eax, test_num_buf
 	call print
 	
 	;mov bx, 'h'
@@ -57,10 +61,13 @@ include "inc/kernel_setup/controllers/pic.asm"
 include "inc/kernel_setup/controllers/keyboard.asm"
 include "inc/kernel_setup/controllers/pci.asm"
 include "inc/kernel_setup/tables/idt.asm";load idt table and interrupt handlers
-include "inc/stdio/stdio.asm"	;load stdio lib
+
+include "inc/std/stdlib.asm"	;load stdio lib
+include "inc/std/stdio.asm"	;load stdio lib
 
 
 test_string db 'hello', 0
+test_num_buf db 0,0,0,0,0
 console_pointer dw 0
 
 times 1024-($-$$) db 0;2 sectors

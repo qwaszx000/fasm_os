@@ -1,3 +1,16 @@
+;ax = num
+print_dec_byte:
+	push ebx
+	mov bl, 10
+
+	;ax/10
+	;al = result
+	;ah = rest
+	div bl
+
+	pop ebx
+	ret
+
 ;eax = text_pointer
 print:
 	;if zero char in end of line - stop
