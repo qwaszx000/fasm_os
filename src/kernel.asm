@@ -23,12 +23,23 @@ protected_start:
 	lidt [IDTR]
 	popa
 
-	include "inc/kernel_setup/controllers/pic.asm"
-	include "inc/kernel_setup/controllers/keyboard.asm"
-	include "inc/kernel_setup/controllers/pci.asm"
-
 	;============TEST=============
 	;int 0Fh;15
+	call setup_pic
+
+	push ebx
+	push ecx
+	push edx
+
+	xor eax, eax
+	xor ebx, ebx
+	xor ecx, ecx
+	xor edx, edx
+	call pciReadConfigDWord
+
+	pop edx
+	pop ecx
+	pop ebx
 
 	mov eax, test_string
 	call print
@@ -42,6 +53,9 @@ main_cicle:
 	jmp main_cicle
 
 
+include "inc/kernel_setup/controllers/pic.asm"
+include "inc/kernel_setup/controllers/keyboard.asm"
+include "inc/kernel_setup/controllers/pci.asm"
 include "inc/kernel_setup/tables/idt.asm";load idt table and interrupt handlers
 include "inc/stdio/stdio.asm"	;load stdio lib
 
