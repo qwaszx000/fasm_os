@@ -23,34 +23,13 @@ protected_start:
 	lidt [IDTR]
 	popa
 
-	;============TEST=============
-	;int 0Fh;15
-	call setup_pic
-
-	;push ebx
-	;push ecx
-	;push edx
-
-	;xor eax, eax
-	;xor ebx, ebx
-	;xor ecx, ecx
-	;xor edx, edx
-	;call pciReadConfigDWord
-
-	;pop edx
-	;pop ecx
-	;pop ebx
-	mov eax, 23
-	mov ebx, test_num_buf
-	mov ecx, 2
-	call dec_to_str
-
-	mov eax, test_num_buf
-	call print
+	;============Prepare=============
 	
-	;mov bx, 'h'
-	;call putc
-	;int 0fh
+	call setup_pic
+	;call bruteCheckPCI
+	
+	mov al, 25
+	call print_dec_byte
 	;===================================
 main_cicle:
 	hlt
@@ -67,7 +46,7 @@ include "inc/std/stdio.asm"	;load stdio lib
 
 
 test_string db 'hello', 0
-test_num_buf db 0,0,0,0,0
+numStr_buf db 8 DUP(0);8 bytes
 console_pointer dw 0
 
 times 1024-($-$$) db 0;2 sectors

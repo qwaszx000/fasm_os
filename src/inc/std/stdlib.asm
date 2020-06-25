@@ -1,15 +1,15 @@
-;ax = num
+;al = num
 ;ebx = buffer pointer
-;ecx = buffer length - it need to be equal to int length
+;ecx = buffer length
 dec_to_str:
     push edx
-    push ecx
     push ebx
+    push ecx
 
     test ecx, ecx;if len == 0 - buffer len is ended
     jz .end
 
-    test ax, ax;if ax is 0 in start - return '0'
+    test al, al;if al is 0 in start - return '0'
     jz .zero
 
     .decToStr:
@@ -39,13 +39,17 @@ dec_to_str:
         jmp .end
 
     .end:
-        pop ebx
+        mov ebx, ecx;ebx = rest of boffer len
+        pop ecx;ecx = buffer len
+        sub ecx, ebx;ecx - ebx = int len
+
+        pop ebx;ebx = buffer pointer
         mov eax, ebx
-        pop ecx
         call reverse_array;our nums is reversed so reverse it
 
         pop edx
         ret
+
 
 ;eax = buffer pointer
 ;ecx = buffer len

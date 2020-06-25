@@ -1,13 +1,16 @@
-;ax = num
+;al = num
 print_dec_byte:
 	push ebx
-	mov bl, 10
+	push ecx
 
-	;ax/10
-	;al = result
-	;ah = rest
-	div bl
+	mov ecx, 8
+	mov ebx, numStr_buf
+	call dec_to_str
 
+	mov eax, numStr_buf
+	call print
+
+	pop ecx
 	pop ebx
 	ret
 

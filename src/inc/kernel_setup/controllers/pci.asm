@@ -44,18 +44,35 @@ bruteCheckPCI:
     xor edx, edx
 
     .iter:
+        push eax
         call pciReadConfigDWord
         ;0xffff means invalid bus or device
-        cmp ax, 0xffff
+        ;cmp ax, 0xffff
+
+        ;run bus up to 255
+        ;run device in each bus to 32
+        ;jz .iter
+        call print_dec_byte
+        ;print pci device info
+        pop eax;eax = bus
+
+        cmp ebx, 32
+        jz .next_bus
+
         ;next device
         inc ebx
-        ;run bus up to 256
-        ;run device in each bus to 32
-        jz .iter
-        ;print pci device info
 
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-    ret
+        jmp .iter
+    .next_bus:
+        cmp eax, 0xff;last bus checked
+        jz .end
+
+        xor ebx, ebx   ;first device of new bus
+        inc eax        ;next bus
+        jmp .iter
+    .end:
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+        ret
