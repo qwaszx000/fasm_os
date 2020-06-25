@@ -28,8 +28,8 @@ protected_start:
 	call setup_pic
 	;call bruteCheckPCI
 	
-	mov al, 25
-	call print_dec_byte
+	mov eax, 0xfff
+	call print_hex
 	;===================================
 main_cicle:
 	hlt
@@ -46,7 +46,7 @@ include "inc/std/stdio.asm"	;load stdio lib
 
 
 test_string db 'hello', 0
-numStr_buf db 8 DUP(0);8 bytes
+numStr_buf db 11 DUP(0);2,147,483,647 - max 32 bits uint = 10 chars + '\0' char = 11
 console_pointer dw 0
 
-times 1024-($-$$) db 0;2 sectors
+times 1536-($-$$) db 0;3 sectors 512*3

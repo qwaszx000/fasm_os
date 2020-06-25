@@ -26,7 +26,6 @@ pciReadConfigDWord:
     out dx, eax
 
     ;read response
-    ;we need only last 16 bits
     mov dx, 0xcfc
     in eax, dx
 
@@ -52,7 +51,7 @@ bruteCheckPCI:
         ;run bus up to 255
         ;run device in each bus to 32
         ;jz .iter
-        call print_dec_byte
+        call print_dec
         ;print pci device info
         pop eax;eax = bus
 

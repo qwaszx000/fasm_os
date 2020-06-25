@@ -1,11 +1,32 @@
-;al = num
-print_dec_byte:
+;eax = num
+print_dec:
 	push ebx
 	push ecx
 
 	mov ecx, 8
 	mov ebx, numStr_buf
 	call dec_to_str
+
+	mov eax, numStr_buf
+	call print
+
+	pop ecx
+	pop ebx
+	ret
+
+;eax = hex num
+print_hex:
+	push ebx
+	push ecx
+
+	mov bl, '0'
+	call putc
+	mov bl, 'x'
+	call putc
+
+	mov ecx, 8
+	mov ebx, numStr_buf
+	call hex_to_str
 
 	mov eax, numStr_buf
 	call print
