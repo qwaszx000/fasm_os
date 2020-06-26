@@ -16,6 +16,7 @@ dec_to_str:
         push ebx
 
         mov ebx, 10
+        xor edx, edx;edx must be 0
         div ebx;cant use edx 
         ;edx = rest
         ;eax = result
@@ -77,6 +78,7 @@ hex_to_str:
         push ebx
 
         mov ebx, 16;hex = 16
+        xor edx, edx;edx must be 0
         div ebx;cant use edx 
         ;edx = rest
         ;eax = result

@@ -8,6 +8,10 @@
 ;edx = offset
 ;return: eax - result
 pciReadConfigDWord:
+    push ebx
+    push ecx
+    push edx
+    
     ;0xcf8 - config_address
     ;0xcfc - data_address
     ;prepare data
@@ -29,6 +33,9 @@ pciReadConfigDWord:
     mov dx, 0xcfc
     in eax, dx
 
+    pop edx
+    pop ecx
+    pop ebx
     ret
 
 bruteCheckPCI:
@@ -46,15 +53,17 @@ bruteCheckPCI:
         push eax
         call pciReadConfigDWord
         ;0xffff means invalid bus or device
-        ;cmp ax, 0xffff
+        cmp ax, 0xffff
+        jz .next_device
 
         ;run bus up to 255
         ;run device in each bus to 32
         ;jz .iter
-        call print_dec
+        call print_hex
         ;print pci device info
-        pop eax;eax = bus
 
+    .next_device:
+        pop eax;eax = bus
         cmp ebx, 32
         jz .next_bus
 
