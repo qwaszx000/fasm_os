@@ -4,8 +4,8 @@ use32
 
 protected_start:
 	;setup segment registers
-	mov ax,0x10
-	mov ds,ax;Data segment = code segment
+	mov ax,0x10;data segment = 0x10 - see gdt.asm
+	mov ds, ax
 
 	mov es,ax;Second data segment
 	mov fs,ax;Third data segment
@@ -14,7 +14,9 @@ protected_start:
 	mov ss,ax;Stack segment
 
 	mov esp,0x90000;Stack end pointer
-	mov ebp,0x50000;Stack base pointer
+	mov ebp, esp;Stack base pointer ;mov ebp, 0x50000
+	;stack grows in reverse direction
+	;i.e: esp grows from 0x90000 to 0x8FFE0, then from 0x8FFE0 to ...
 
 	;mov ax,0x12
 	;mov edi,0xB8000
@@ -27,6 +29,9 @@ protected_start:
 	
 	call setup_pic
 	call bruteCheckPCI
+
+	;mov eax, test_string
+	;call print
 	
 	;mov eax, 0xffffffff
 	;call print_hex

@@ -37,11 +37,11 @@ print_hex:
 
 ;eax = text_pointer
 print:
-	;if zero char in end of line - stop
 	push ebx
 
 .cicle:
 	mov bl, byte [eax]
+	;if zero char in end of line - stop
 	test bl, bl
 	jz .exit
 
@@ -63,6 +63,7 @@ putc:
 	mov byte [ecx], bl
 	inc ecx
 	mov byte [ecx], 0x07
+	;if points in end of videomemory - set it zero
 	cmp [console_pointer], 2000
 	jz .clear_counter
 	add [console_pointer], 2
