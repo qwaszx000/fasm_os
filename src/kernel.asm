@@ -28,7 +28,14 @@ protected_start:
 	;============Prepare=============
 	
 	call setup_pic
-	call bruteCheckPCI
+	;call bruteCheckPCI
+
+	xor ebx, ebx;zero cylinder
+	mov bh, 0;0 head
+	mov bl, 1;first sector
+	mov ch, 1
+	mov edi, sector_buffer
+	call ata_read_chs
 
 	;mov eax, test_string
 	;call print
@@ -44,6 +51,7 @@ main_cicle:
 include "inc/kernel_setup/controllers/pic.asm"
 include "inc/kernel_setup/controllers/keyboard.asm"
 include "inc/kernel_setup/controllers/pci.asm"
+include "inc/kernel_setup/controllers/ata.asm"
 include "inc/kernel_setup/tables/idt.asm";load idt table and interrupt handlers
 
 include "inc/std/stdlib.asm"	;load stdio lib
@@ -53,5 +61,6 @@ include "inc/std/stdio.asm"	;load stdio lib
 test_string db 'hello', 0
 numStr_buf db 11 DUP(0);4,294,967,295 - max 32 bits uint = 10 chars + '\0' char = 11
 console_pointer dw 0
+sector_buffer db 512 dup (0)
 
-times 1536-($-$$) db 0;3 sectors 512*3
+times 2048-($-$$) db 0;4 sectors 512*4
