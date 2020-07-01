@@ -1,3 +1,4 @@
+;user irqs
 int_test:
 	nop;skips 1 command
 	push ax
@@ -7,6 +8,7 @@ int_test:
 	pop ax
 	iretd
 
+;exceptions
 empty_exception_handler:
 	nop;skips 1 command
 	push ax
@@ -17,6 +19,43 @@ empty_exception_handler:
 	pop ax
 	iretd
 
+gpf_exception_handler:
+	nop;skips 1 command
+	push ax
+	;mov [0xB8000], dword 0x7600740
+	mov bl, "1"
+	call putc
+	pop ax
+	iretd
+
+df_exception_handler:
+	nop;skips 1 command
+	push ax
+	;mov [0xB8000], dword 0x7600740
+	mov bl, "2"
+	call putc
+	pop ax
+	iretd
+
+device_not_awable_exception_handler:
+	nop;skips 1 command
+	push ax
+	;mov [0xB8000], dword 0x7600740
+	mov bl, "3"
+	call putc
+	pop ax
+	iretd
+
+opcode_exception_handler:
+	nop;skips 1 command
+	push ax
+	;mov [0xB8000], dword 0x7600740
+	mov bl, "4"
+	call putc
+	pop ax
+	iretd
+
+;devices
 keyboard_handler:
 	nop;skips 1 command
 	push eax

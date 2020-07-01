@@ -48,10 +48,10 @@ main_cicle:
 	jmp main_cicle
 
 
+include "inc/kernel_setup/controllers/ata.asm"
 include "inc/kernel_setup/controllers/pic.asm"
 include "inc/kernel_setup/controllers/keyboard.asm"
 include "inc/kernel_setup/controllers/pci.asm"
-include "inc/kernel_setup/controllers/ata.asm"
 include "inc/kernel_setup/tables/idt.asm";load idt table and interrupt handlers
 
 include "inc/std/stdlib.asm"	;load stdio lib

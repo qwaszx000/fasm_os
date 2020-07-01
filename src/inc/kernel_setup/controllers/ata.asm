@@ -45,13 +45,13 @@ ata_read_chs:
     ;send command
     ;0x1f7 = command port to write
     ; or status port to read
-    mov dx, 0x1f7
+    mov edx, 0x1f7
+    ;mov dx, 0x1f7
     mov al, 0x20 ;read with retry
     out dx, al
 
     .read_status:
-        mov dx, 0x1f7
-        in al, dx
+        in al, dx;drops here
         cmp al, 00001000b;Overlapped Mode Service Request. 
         jz .read_status
     .read_data:

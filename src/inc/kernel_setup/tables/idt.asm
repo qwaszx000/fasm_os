@@ -31,34 +31,34 @@ idt:;interrupts description table
 	db 010001110b
 	dw (empty_exception_handler shr 0x10)
 
-	dw ((empty_exception_handler shl 0x30) shr 0x30);6 - Invalid opcode
+	dw ((opcode_exception_handler shl 0x30) shr 0x30);6 - Invalid opcode
 	dw 0x8
 	db 0
 	db 010001110b
-	dw (empty_exception_handler shr 0x10)
+	dw (opcode_exception_handler shr 0x10)
 
-	dw ((empty_exception_handler shl 0x30) shr 0x30);7 - Device not awable
+	dw ((device_not_awable_exception_handler shl 0x30) shr 0x30);7 - Device not awable
 	dw 0x8
 	db 0
 	db 010001110b
-	dw (empty_exception_handler shr 0x10)
+	dw (device_not_awable_exception_handler shr 0x10)
 
-	dw ((empty_exception_handler shl 0x30) shr 0x30);8 - Double fault
+	dw ((df_exception_handler shl 0x30) shr 0x30);8 - Double fault
 	dw 0x8
 	db 0
 	db 010001110b
-	dw (empty_exception_handler shr 0x10)
+	dw (df_exception_handler shr 0x10)
 
 	dd 0,0;9 - coprocessor segment overrun
 	dd 0,0;10 - invalid TSS
 	dd 0,0;11 - segment not present
 	dd 0,0;12 - stack segment fault
 
-	dw ((empty_exception_handler shl 0x30) shr 0x30);13 - general protection fault
+	dw ((gpf_exception_handler shl 0x30) shr 0x30);13 - general protection fault
 	dw 0x8
 	db 0
 	db 010001110b
-	dw (empty_exception_handler shr 0x10)
+	dw (gpf_exception_handler shr 0x10)
 	dd 0,0;14 - page fault
 
 	dw ((int_test shl 0x30) shr 0x30);15
