@@ -1,63 +1,246 @@
 ;user irqs
 int_test:
-	nop;skips 1 command
 	push ax
 	mov [0xb8000], dword 0x07690748
-	;mov al, 20h
-	;out 20h, al
+
+	mov al, 20h
+	out 20h, al
+
 	pop ax
 	iretd
 
 ;exceptions
-empty_exception_handler:
-	nop;skips 1 command
+
+zero_div_exception_handler:
 	push ax
-	;mov al, 20h
-	;out 0x20, al
-	;out 0xA0, al
-	mov [0xB8000], dword 0x7600740
+
+	mov eax, zero_div_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
 	pop ax
 	iretd
 
-gpf_exception_handler:
-	nop;skips 1 command
+nmi_handler:
 	push ax
-	;mov [0xB8000], dword 0x7600740
-	mov bl, "1"
-	call putc
+
+	mov eax, nmi_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
 	pop ax
 	iretd
 
-df_exception_handler:
-	nop;skips 1 command
+overflow_exception_handler:
 	push ax
-	;mov [0xB8000], dword 0x7600740
-	mov bl, "2"
-	call putc
+
+	mov eax, overflow_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
 	pop ax
 	iretd
 
-device_not_awable_exception_handler:
-	nop;skips 1 command
+bound_exception_handler:
 	push ax
-	;mov [0xB8000], dword 0x7600740
-	mov bl, "3"
-	call putc
+
+	mov eax, bound_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
 	pop ax
 	iretd
 
 opcode_exception_handler:
-	nop;skips 1 command
 	push ax
-	;mov [0xB8000], dword 0x7600740
-	mov bl, "4"
-	call putc
+	
+	mov eax, opcode_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
+	pop ax
+	iretd
+
+df_exception_handler:
+	push ax
+
+	mov eax, df_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+coproc_segment_exception_handler:
+	push ax
+
+	mov eax, coproc_segment_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+tts_exception_handler:
+	push ax
+
+	mov eax, tts_inv_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+segment_not_present_exception_handler:
+	push ax
+
+	mov eax, seg_not_present_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+device_unavailable_exception_handler:
+	push ax
+
+	mov eax, device_unavailable_str
+	call print
+
+	mov al, 0x20
+	out 0x20, al
+
+	pop ax
+	iretd
+
+ss_exception_handler:
+	push eax
+
+	mov eax, ss_fault_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop eax
+	iretd
+
+gpf_exception_handler:
+	push eax
+
+	mov eax, gpf_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop eax
+	iretd
+
+page_fault_exception_handler:
+	push ax
+	
+	mov eax, page_fault_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+fpu_exception_handler:
+	push ax
+
+	mov eax, fpu_error_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+aligment_exception_handler:
+	push ax
+
+	mov eax, aligm_check_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+machine_check_exception_handler:
+	push ax
+
+	mov eax, mach_check_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+floating_point_exception_handler:
+	push ax
+
+	mov eax, floating_point_except_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
+	pop ax
+	iretd
+
+unknown_exception_handler:
+	push ax
+
+	mov eax, unknown_str
+	call print
+
+	mov al, 0x20
+	out 0xA0, al
+	out 0x20, al
+
 	pop ax
 	iretd
 
 ;devices
 keyboard_handler:
-	nop;skips 1 command
 	push eax
 	push ebx
 	push ecx
@@ -106,9 +289,7 @@ keyboard_handler:
 	iretd
 
 timer_handler:
-	nop;skips 1 command
 	push ax
-	;inc dword [0xb8000]
 	mov al, 0x20
 	out 0x20, al
 	pop ax
@@ -121,3 +302,24 @@ chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8,
 	       'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ', 0, 0, \
 	       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1', \
 	       '2', '3', '0', '.', 0, 0, 0, 0, 0
+
+
+zero_div_str db 'Divide by 0', 0
+nmi_str db 'NMI interrupt', 0
+overflow_str db 'Overflow', 0
+bound_str db 'BOUND', 0
+opcode_str db 'Invalid opcode', 0
+device_unavailable_str db 'Device not available', 0
+df_str db 'Double fault', 0
+coproc_segment_str db 'Coprocessor segment overrun', 0
+tts_inv_str db 'Invalid TSS', 0
+seg_not_present_str db 'Segment not present',0
+ss_fault_str db 'Stack segment fault', 0
+gpf_str db 'General protection fault', 0
+page_fault_str db 'Page fault', 0
+fpu_error_str db 'x87 FPU error', 0
+aligm_check_str db 'Alignment check', 0
+mach_check_str db 'Machine check', 0
+floating_point_except_str db 'SIMD floating point exception', 0
+
+unknown_str db 'Unknown exception!', 0

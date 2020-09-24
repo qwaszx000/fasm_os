@@ -45,8 +45,7 @@ ata_read_chs:
     ;send command
     ;0x1f7 = command port to write
     ; or status port to read
-    mov edx, 0x1f7
-    ;mov dx, 0x1f7
+    mov dx, 0x1f7
     mov al, 0x20 ;read with retry
     out dx, al
 

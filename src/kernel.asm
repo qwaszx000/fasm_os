@@ -4,16 +4,16 @@ use32
 
 protected_start:
 	;setup segment registers
-	mov ax,0x10;data segment = 0x10 - see gdt.asm
+	mov ax, 0x10;data segment = 0x10 - see gdt.asm
 	mov ds, ax
 
-	mov es,ax;Second data segment
-	mov fs,ax;Third data segment
-	mov gs,ax;4 data segment
+	mov es, ax;Second data segment
+	mov fs, ax;Third data segment
+	mov gs, ax;4 data segment
 
 	mov ss,ax;Stack segment
 
-	mov esp,0x90000;Stack end pointer
+	mov esp, 0x90000;Stack end pointer
 	mov ebp, esp;Stack base pointer ;mov ebp, 0x50000
 	;stack grows in reverse direction
 	;i.e: esp grows from 0x90000 to 0x8FFE0, then from 0x8FFE0 to ...
@@ -63,4 +63,5 @@ numStr_buf db 11 DUP(0);4,294,967,295 - max 32 bits uint = 10 chars + '\0' char 
 console_pointer dw 0
 sector_buffer db 512 dup (0)
 
-times 2048-($-$$) db 0;4 sectors 512*4
+;times 2048-($-$$) db 0;4 sectors 512*4
+times 2560-($-$$) db 0;5 sectors 512*5
