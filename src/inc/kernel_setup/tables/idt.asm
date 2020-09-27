@@ -187,23 +187,102 @@ idt:;interrupts description table
 	db 010001110b
 	dw (unknown_exception_handler shr 0x10)
 
-	dw ((timer_handler shl 0x30) shr 0x30);32 - 0x20 - irq0 timer
+	dw ((timer_handler shl 0x30) shr 0x30);32 - 0x20 - irq0 timer - begin of pic master
 	dw 0x8
 	db 0
 	db 010001110b
 	dw (timer_handler shr 0x10)
 
-	dw ((keyboard_handler shl 0x30) shr 0x30); irq1 - keyboard
+	dw ((keyboard_handler shl 0x30) shr 0x30);33 irq1 - keyboard
 	dw 0x8
 	db 0
 	db 010001110b
 	dw (keyboard_handler shr 0x10)
 
-	;dw ((timer_handler shl 0x30) shr 0x30);irq2
-	;dw 0x8
-	;db 0
-	;db 010001110b
-	;dw (timer_handler shr 0x10)
+	dw ((timer_handler shl 0x30) shr 0x30);34 - irq2 - cascade
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (timer_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);35 - irq3 - com2
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);36 - irq4 - com1
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);37 - irq5 - lpt
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);38 - irq6 - floppy disk
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);39 - irq 7 - lpt1
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);40 - begin of pic slave - irq8 - cmos real time clock
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);41
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);42
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);43
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);44 - ps2 mouse
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);45 - fpu
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
+	dw ((primary_ata_handler shl 0x30) shr 0x30);46 - primary ata
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (primary_ata_handler shr 0x10)
+
+	dw ((unknown_exception_handler shl 0x30) shr 0x30);47 - secondary ata
+	dw 0x8
+	db 0
+	db 010001110b
+	dw (unknown_exception_handler shr 0x10)
+
 IDTR:
 	dw IDTR-idt-1;size
 	dd idt;address

@@ -75,3 +75,5 @@ putc:
 .end:
 	pop ecx
 	ret
+
+console_pointer dw 0

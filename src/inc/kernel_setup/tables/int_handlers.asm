@@ -296,6 +296,14 @@ timer_handler:
 	iretd
 
 
+primary_ata_handler:
+	push ax
+	mov al, 0x20
+	out 0x20, al
+	out 0xA0, al
+	pop ax
+	iretd
+
 chars_codes db 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 8, \;backspace
 	       0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', \
 	       0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '`', 0, '\', \

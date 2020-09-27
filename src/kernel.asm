@@ -60,7 +60,6 @@ include "inc/std/stdio.asm"	;load stdio lib
 
 test_string db 'hello', 0
 numStr_buf db 11 DUP(0);4,294,967,295 - max 32 bits uint = 10 chars + '\0' char = 11
-console_pointer dw 0
 sector_buffer db 512 dup (0)
 
 ;times 2048-($-$$) db 0;4 sectors 512*4
