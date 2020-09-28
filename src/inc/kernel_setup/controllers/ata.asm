@@ -50,7 +50,7 @@ ata_read_chs:
     out dx, al
 
     .read_status:
-        in al, dx;drops here
+        in al, dx
         cmp al, 00001000b;Overlapped Mode Service Request. 
         jz .read_status
     .read_data:

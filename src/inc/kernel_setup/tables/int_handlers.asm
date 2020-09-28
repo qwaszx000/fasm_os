@@ -1,14 +1,3 @@
-;user irqs
-int_test:
-	push ax
-	mov [0xb8000], dword 0x07690748
-
-	mov al, 20h
-	out 20h, al
-
-	pop ax
-	iretd
-
 ;exceptions
 
 zero_div_exception_handler:
@@ -16,9 +5,6 @@ zero_div_exception_handler:
 
 	mov eax, zero_div_str
 	call print
-
-	mov al, 0x20
-	out 0x20, al
 
 	pop ax
 	iretd
@@ -29,9 +15,6 @@ nmi_handler:
 	mov eax, nmi_str
 	call print
 
-	mov al, 0x20
-	out 0x20, al
-
 	pop ax
 	iretd
 
@@ -40,9 +23,6 @@ overflow_exception_handler:
 
 	mov eax, overflow_str
 	call print
-
-	mov al, 0x20
-	out 0x20, al
 
 	pop ax
 	iretd
@@ -53,9 +33,6 @@ bound_exception_handler:
 	mov eax, bound_str
 	call print
 
-	mov al, 0x20
-	out 0x20, al
-
 	pop ax
 	iretd
 
@@ -65,23 +42,17 @@ opcode_exception_handler:
 	mov eax, opcode_str
 	call print
 
-	mov al, 0x20
-	out 0x20, al
-
 	pop ax
 	iretd
 
 df_exception_handler:
-	push ax
-
 	mov eax, df_str
 	call print
+	
+	pop eax
+	call print_hex
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
-	pop ax
+	hlt
 	iretd
 
 coproc_segment_exception_handler:
@@ -90,37 +61,26 @@ coproc_segment_exception_handler:
 	mov eax, coproc_segment_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
 	pop ax
 	iretd
 
 tts_exception_handler:
-	push ax
 
 	mov eax, tts_inv_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
+	pop eax
+	call print_hex
 
-	pop ax
 	iretd
 
 segment_not_present_exception_handler:
-	push ax
-
 	mov eax, seg_not_present_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
+	pop eax
+	call print_hex
 
-	pop ax
 	iretd
 
 device_unavailable_exception_handler:
@@ -129,49 +89,37 @@ device_unavailable_exception_handler:
 	mov eax, device_unavailable_str
 	call print
 
-	mov al, 0x20
-	out 0x20, al
-
 	pop ax
 	iretd
 
 ss_exception_handler:
-	push eax
-
 	mov eax, ss_fault_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
 	pop eax
+	call print_hex
+
 	iretd
 
 gpf_exception_handler:
-	push eax
-
+	;print general protection fault
 	mov eax, gpf_str
 	call print
+	;print Selector Error Code 
+	;handled because handler is trap
+	pop eax;tbl, selector index and reserved 2 bytes 
+	call print_hex;print it
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
-	pop eax
+	;return addr left
 	iretd
 
-page_fault_exception_handler:
-	push ax
-	
+page_fault_exception_handler:	
 	mov eax, page_fault_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
+	pop eax
+	call print_hex
 
-	pop ax
 	iretd
 
 fpu_exception_handler:
@@ -180,24 +128,16 @@ fpu_exception_handler:
 	mov eax, fpu_error_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
 	pop ax
 	iretd
 
 aligment_exception_handler:
-	push ax
-
 	mov eax, aligm_check_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
+	pop eax
+	call print_hex
 
-	pop ax
 	iretd
 
 machine_check_exception_handler:
@@ -206,11 +146,10 @@ machine_check_exception_handler:
 	mov eax, mach_check_str
 	call print
 
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
-
 	pop ax
+
+	;abort exception type
+	hlt
 	iretd
 
 floating_point_exception_handler:
@@ -218,10 +157,6 @@ floating_point_exception_handler:
 
 	mov eax, floating_point_except_str
 	call print
-
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
 
 	pop ax
 	iretd
@@ -231,10 +166,6 @@ unknown_exception_handler:
 
 	mov eax, unknown_str
 	call print
-
-	mov al, 0x20
-	out 0xA0, al
-	out 0x20, al
 
 	pop ax
 	iretd
@@ -297,6 +228,21 @@ timer_handler:
 
 
 primary_ata_handler:
+	push ax
+	mov al, 0x20
+	out 0x20, al
+	out 0xA0, al
+	pop ax
+	iretd
+
+pic_master_empty_irq:
+	push ax
+	mov al, 0x20
+	out 0x20, al
+	pop ax
+	iretd
+
+pic_slave_empty_irq:
 	push ax
 	mov al, 0x20
 	out 0x20, al

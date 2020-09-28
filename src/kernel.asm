@@ -40,8 +40,8 @@ protected_start:
 	;mov eax, test_string
 	;call print
 	
-	;mov eax, 0xffffffff
-	;call print_hex
+	mov eax, dword [sector_buffer]
+	call print_hex
 	;===================================
 main_cicle:
 	hlt
