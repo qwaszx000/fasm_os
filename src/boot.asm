@@ -29,8 +29,7 @@ _start:
     pop dx;DH - head, DL - drive
     xor ch, ch;0 Cylinder
     mov cl, 0x02;Sector(count from 1)
-    ;mov al, 0x04;Sectors to read. we read 4 sectors because our kernel has size = 4 sectors
-    mov al, 0x05;Sectors to read. we read 5 sectors because our kernel has size = 5 sectors
+    mov al, 0x06;Sectors to read. we read 6 sectors because our kernel has size = 6 sectors
     xor bx, bx
     mov es,bx    ;ES:BX memory address
     mov bx, 0x0500

@@ -33,7 +33,7 @@ protected_start:
 	xor ebx, ebx;zero cylinder
 	mov bh, 0;0 head
 	mov bl, 1;first sector
-	mov ch, 2
+	mov ch, 1;1 sector
 	mov edi, write_buffer
 	call ata_write_chs
 
@@ -68,6 +68,6 @@ include "inc/std/stdio.asm"	;load stdio lib
 test_string db 'hello', 0
 numStr_buf db 11 DUP(0);4,294,967,295 - max 32 bits uint = 10 chars + '\0' char = 11
 sector_buffer db 512 dup (5)
-write_buffer dw 0xeeee, 0xeeee
+write_buffer dw 256 dup (0xeeee)
 
-times 2560-($-$$) db 0;5 sectors 512*5
+times 3072-($-$$) db 0;6 sectors 512*6

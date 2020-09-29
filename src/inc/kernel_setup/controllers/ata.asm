@@ -52,8 +52,6 @@ ata_read_chs:
     .read_status:
         in al, dx
         ;test al, 00001000b;Overlapped Mode Service Request. 
-        test al, 00010000b ;drq
-        jz .read_status
         test al, 10000000b;BSY - preparing to send/read data
         jnz .read_status
         test al, 00000001b;ERR - error
@@ -80,7 +78,7 @@ ata_read_chs:
 
 
 ;ebx - cylinder 16bits(up to 65535) + bh = head(0 to 15) + bl = sector(1 to 63)
-;ch = buffer len in words
+;ch = sectors to write
 ;edi = buffer address, where data to write stored
 ata_write_chs:
     push eax
@@ -130,8 +128,6 @@ ata_write_chs:
         in al, dx
         ;test al, 00001000b;Overlapped Mode Service Request. 
         ;jnz .read_status
-        test al, 00010000b ;drq
-        jz .read_status
         test al, 10000000b;BSY - preparing to send/read data
         jnz .read_status
         test al, 00000001b;ERR - error
@@ -139,11 +135,20 @@ ata_write_chs:
         test al, 00000100b;DF - drive fault, not sets ERR
         jnz .end
     .prepare:
+        ;count len
+        mov al, ch
+        mov bx, 256
+        mul bx;count of sectors * 256 words to write per sector - result in dx ax
+
+        xor ecx, ecx
+        mov cx, dx
+        shl ecx, 0x10
+        mov cx, ax
+        
         mov dx, 0x1f0;data port
     .write_data:
-        ;ch - len
+        ;cx - len
         ;edi - pointer to buffer
-        ;bl - index
         ;rep outsw - dont use
         mov ax, word [edi]
         out dx, ax
@@ -151,11 +156,11 @@ ata_write_chs:
         nop
         nop
 
-        dec ch;dec len
+        dec ecx;dec len
 
         inc edi;inc index(next word)
         inc edi
-        test ch, ch;if ch = 0 then end
+        test ecx, ecx;if ch = 0 then end
         jnz .write_data
     .flush:
         ;E7 - cache flush
